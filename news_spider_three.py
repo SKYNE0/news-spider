@@ -14,7 +14,7 @@ import time
 class news_spider():
 
     def __init__(self):
-        self.post_url = "http://123.206.254.253/Cetus/Public/cetus/"
+        self.post_url = "***************************"
         self.huxiu_url = "https://www.huxiu.com"
         self.leiphone_url = "https://www.leiphone.com"
         self.tmtpost_url = "http://www.tmtpost.com"
