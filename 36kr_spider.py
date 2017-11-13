@@ -15,7 +15,7 @@ import requests
 class kr_spider():
     # 说来奇怪，不知道为什么在其他方法中执行selenium打开phantomjs的操作会导致无法提取主页文章的url地址，而放在构造方法就可以。
     def __init__(self):
-        self.post_url = "http://123.206.254.253/Cetus/Public/cetus/"
+        self.post_url = "***********************************"
         self.url = "https://36kr.com/"
         self.headers = {
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
