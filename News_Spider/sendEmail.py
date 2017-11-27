@@ -22,7 +22,7 @@ def _format_(addr):
 
 def sendmail(content):
     from_addr = "1163046964@qq.com"
-    password = "jylmcdglmxbqijdb"
+    password = "*****************"
     to_addr = '520@skyne.cn'
     server_addr = "smtp.qq.com"
     message = MIMEText(content, 'html', 'utf-8')
