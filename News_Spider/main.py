@@ -57,7 +57,7 @@ class progarm(object):
         "Accept-Encoding": "gzip, deflate", "Accept-Language": "zh-CN,zh;q=0.8", "Cache-Control": "max-age=0",
         "Connection": "keep-alive", "Upgrade-Insecure-Requests": "1",
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Safari/537.36", }
-        self.post_url = "http://123.206.254.253/Cetus/Public/cetus/"
+        self.post_url = "***********************"
         # 用来记录一天的发送记录。
         self.content = ""
 
