@@ -15,6 +15,8 @@ import time
 
 import random
 
+from autoSendBlog import autoSendBlog
+
 from sendEmail import sendmail
 
 from spider.huxiu import huxiu
@@ -38,7 +40,10 @@ class queue(object):
         self.items.insert(0, item)
 
     def dequeue(self):
-        return  self.items.pop()
+        if self.is_empty():
+            return None
+        else:
+            return  self.items.pop()
 
     def size(self):
         return len(self.items)
@@ -57,7 +62,7 @@ class progarm(object):
         "Accept-Encoding": "gzip, deflate", "Accept-Language": "zh-CN,zh;q=0.8", "Cache-Control": "max-age=0",
         "Connection": "keep-alive", "Upgrade-Insecure-Requests": "1",
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Safari/537.36", }
-        self.post_url = "***********************"
+        self.post_url = "**************************"
         # 用来记录一天的发送记录。
         self.content = ""
 
@@ -66,12 +71,24 @@ class progarm(object):
         time_now = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
         return time_now
 
+    def autoSendBolg(self, news):
+        blog = autoSendBlog()
+        flag = blog.SendBlog(news)
+        if flag == 1:
+            print('Good, Blog is send success! @SKYNE')
+
+        else:
+            print('Blog seng error! please check the error = {}! @SKYNE'.format(flag))
+            content = 'Blog seng error! please check the error is that ' + flag + '@SKYNE'
+            sendmail(content)
+
+
     # 使用post的方法，发送抓取信息至指定API接口。
     def post_data(self, news):
         res = requests.post(url= self.post_url, data= news, headers= self.headers)
         if res.status_code == 200:
-            print(self.time_now(), "\tGood,Send success @SKYNE\n", news['link'])
-            self.content = self.content + self.time_now() + "\tGood,Send success" + news['link'] + "\n"
+            print(self.time_now(), "\tGood,Send success @SKYNE url=" + news['link'] + "\n")
+            self.content = self.content + self.time_now() + "\tGood,Send success" + news['link'] + "<br>"
 
     def get_url(self):
         hu = huxiu()
@@ -87,20 +104,23 @@ class progarm(object):
         :url[12]: 判断对应的url，h, m, 3, l分别对应：huxiu, tmtpost, 36kr, leiphone
         :return: news
         """
-        if url[12] == 'h':
-            hu = huxiu()
-            return hu.get_news(url=url)
+        if url:
+            if url[12] == 'h':
+                hu = huxiu()
+                return hu.get_news(url=url)
 
-        elif url[12] == 'm':
-            tmt = tmtpost()
-            return tmt.get_news(url= url)
+            elif url[12] == 'm':
+                tmt = tmtpost()
+                return tmt.get_news(url= url)
 
-        elif url[8] == '3':
-            k = kr()
-            return k.get_news(url= url)
+            elif url[9] == 'k':
+                print('kr\n')
+                k = kr()
+                return k.get_news(url= url)
 
         else:
             print(self.time_now(),'\tAppear error url=', url)
+            return None
 
     # 去除重复的URL地址，返回新增的URL地址
     # print(url in url_old)
@@ -140,26 +160,30 @@ class progarm(object):
 
     def main(self):
         print(self.time_now(),'\tProgram is starting up! please waiting! @SKYNE\n')
-        counter = 1
+        hour_counter = 0
         url_queue = queue()
         url_new = self.get_url()
         url_queue = self.random_url(queue= url_queue, url_list= url_new)
         while(True):
-            print(self.time_now(), '\tThe program is performing {} queries ! @SKYNE\n'.format(counter))
+            print(self.time_now(), '\tThe program is performing {} queries ! @SKYNE\n'.format(hour_counter))
             flag = True
-            if not url_queue.is_empty():
-                while (flag):
+            while (flag):
+                if url_queue.is_empty():
+                    print (self.time_now (), '\tThe queue is empty @SKYNE\n')
+                    flag = False
+                else:
                     news = self.get_news(url= url_queue.dequeue())
-                    if news != -1 and news != None:
+                    if news:
                         self.post_data(news)
+                        self.autoSendBolg(news)
                         flag = False
 
-            counter += 1
+            hour_counter += 1
             print(self.time_now(), '\tPaogarm delay half-hour! @SKYNE\n')
-            time.sleep(18)
+            time.sleep(2400)
 
             # 每过一个重新查询有无新的url
-            if counter%2 == 0:
+            if hour_counter%2 == 0:
                 url_old = url_new
                 url_new = self.set_url(url_new= self.get_url(), url_old= url_old)
                 url_queue = self.random_url(queue= url_queue, url_list= url_new)
@@ -167,19 +191,22 @@ class progarm(object):
 
             # print('queue=', url_queue.return_all())
             # 夜间进入休眠
-            if time.localtime()[3] > 21:
+            if time.localtime()[3] >= 21:
                 print(self.time_now(), '\tPaogarm delay ten hours! Good night! @SKYNE\n')
 
-                mail_header = "Good night SKYNE, The program runs well, and Here is the log!\n"
+                mail_header = "Good night SKYNE, The program runs well, and Here is the log! <br>"
                 sendmail(mail_header + self.content)
-
-                time.sleep(36000)
-
-                print(self.time_now(), 'Program is starting up! please waiting! Good morning @SKYNE\n')
-                counter = 1
-                url_queue = queue()
-                url_new = self.get_url()
-                url_queue = self.random_url(queue=url_queue, url_list=url_new)
+                Flag = True
+                while(Flag):
+                    if time.localtime()[3] == 8:
+                        print(self.time_now(), 'Program is starting up! please waiting! Good morning @SKYNE\n')
+                        hour_counter = 0
+                        url_queue = queue()
+                        url_new = self.get_url()
+                        url_queue = self.random_url(queue=url_queue, url_list=url_new)
+                        Flag = False
+                    else:
+                        time.sleep(1200)
 
 
 

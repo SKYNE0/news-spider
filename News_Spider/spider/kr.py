@@ -9,6 +9,7 @@
 """
 
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
 
 class kr(object):
 
@@ -47,10 +48,10 @@ class kr(object):
         driver = self.create_phantomJS()
         driver.get(url)
         # 等待页面加载完成
-        driver.implicitly_wait(10)
-        news = {}
-        flag = None
+        driver.implicitly_wait(30)
         try:
+            news = {}
+            news['url'] = url
             news['link'] = url
             news['author'] = u"36Kr"
             summary = driver.find_element_by_xpath('//div[1]/div/section[@class="summary"]').text
@@ -58,12 +59,22 @@ class kr(object):
             news['cover'] = driver.find_element_by_xpath('//section[@class="textblock"]//span/img').get_attribute('src')
             news['labels'] = driver.find_element_by_xpath('//div/span[2]/abbr').text
             news['service'] = 'Article.AddArticle'
-            # print(news)
-        except Exception as e:
-            print("Appear error url=", url)
-            flag = 1
-        driver.quit()
-        if flag == None:
-            return news
-        else:
-            return -1
+            driver.quit()
+            if not news['cover']:
+                news['cover'] = "https://gss3.bdstatic.com/-Po3dSag_xI4khGkpoWK1HF6hhy/baike/crop%3D78%2C0%2C853%2C563%3Bc0%3Dbaike92%2C5%2C5%2C92%2C30/sign=834223da8c18367ab9c6259d1344b3f8/86d6277f9e2f07081b2bc4f3e324b899a901f213.jpg"
+                return news
+        except NoSuchElementException as e:
+            print ("Appear error url=", url, e)
+            return None
+
+
+
+if __name__ == '__main__':
+
+    url = 'http://36kr.com/p/5105531.html'
+
+    kr = kr()
+    url_list = kr.get_url()
+    print(url_list)
+    for url in url_list:
+        print(kr.get_news(url))

@@ -65,6 +65,7 @@ class huxiu(object):
         flag = None
         try:
             # 重新组合成https://m.huxiu.com/ 类型的移动端url地址。
+            news['url'] = url
             news['link'] = url[0:8:1] + "m" + url[11:-1:1] + url[-1]
             # print(news['link'])
             selector = self.parser(url)
@@ -72,18 +73,18 @@ class huxiu(object):
             news['author'] = u'虎嗅网'
             # selector.xpath('//div[3]/div[1]/div[2]/a[1]/text()')[0].strip()
             summary = str(selector.xpath('//div[@class="article-content-wrap"]//p/text()'))[1:200:1].strip("', '")
-            news['title'] = selector.xpath('/html/head/title/text()')[0] + '\n' + summary + '........\n\n点击查看全部'
+            title = selector.xpath('/html/head/title/text()')[0] + '\n' + summary + '........\n\n点击查看全部'
+            news['title'] = title.replace ("', '", '')
             news['cover'] = selector.xpath('//div[@class="article-img-box"]/img/@src')[0]
             news['labels'] = selector.xpath('//div[@class="column-link-box"]/a/text()')[0]
             news['service'] = 'Article.AddArticle'
-            # print(news)
         except Exception as e:
             print("url=", url, e)
             flag = 1
         if flag == None:
             return news
         else:
-            return -1
+            return None
 
 
 if __name__ == '__main__':
@@ -91,4 +92,5 @@ if __name__ == '__main__':
 
     url_list = huxiu.get_url()
 
-    print(url_list)
+    for url in url_list:
+        huxiu.get_news(url)

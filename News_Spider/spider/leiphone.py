@@ -65,6 +65,7 @@ class leiphone(object):
         news = {}
         flag = None
         try:
+            news['url'] = url
             news['link'] = url[0:8:1] + "m" + url[11:-1:1] + url[-1]
             # print(news['link'])
             selector = self.parser(url)
@@ -81,4 +82,4 @@ class leiphone(object):
         if flag == None:
             return news
         else:
-            return -1
+            return None
