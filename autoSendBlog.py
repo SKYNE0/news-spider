@@ -27,9 +27,9 @@ class autoSendBlog(object):
 
 
     def getAccessToken(self):
-        app_key = '2626193718'
+        app_key = '*********'
 
-        app_secret = '626390fdc176e5b8f5e5104a1ee7443d'
+        app_secret = '*****************************************'
 
         redirect_uri = 'https://api.weibo.com/oauth2/default.html'
 
@@ -92,7 +92,7 @@ class autoSendBlog(object):
 
     def SendBlog(self, news):
         # 获取到的access_token 有一定的有效期。
-        access_token = '2.001dgV6GMxOjrCaa657ecfb56XE5fC'
+        access_token = '******************657ecfb56XE5fC'
 
         self.saveImg(img_url= news['cover'])
 
