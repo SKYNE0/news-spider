@@ -23,7 +23,7 @@ def time_now():
 @news: 字典类性
 """
 def Socket_Send(news):
-    HOST = '123.206.254.253'
+    HOST = '***********'
     PORT = 3434
     BUFF_SIZE = 8000
     S = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
